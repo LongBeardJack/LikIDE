@@ -5,7 +5,7 @@
 #### Python-IDE est composé de:
 - [x] une fenètre
 - [ ] une division console | editeur
-- [ ] le chargement de fichier
+- [ ] le traitement de fichier
 - [ ] le changement de theme de l'IDE
 - [ ] boutton de lancement
 - [x] choix de langue
