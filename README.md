@@ -7,3 +7,5 @@
 - [ ] une division console | editeur
 - [ ] le chargement de fichier
 - [ ] le changement de theme de l'IDE
+- [ ] boutton de lancement
+- [ ] choix de langue
