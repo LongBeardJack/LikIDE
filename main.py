@@ -1,9 +1,11 @@
 from window import Window
+import config, importlib, traceback
 
-window = Window("Titre ici", "1080x720")
-window.create_label(text="Test")
-window.create_label(text="Test2")
-window.add_all_label()
+lang = importlib.import_module("lang." + config.lang)
+
+window = Window("Likide " + config.version + " (python: " + config.py_version + ")", "1080x720")
+window.create_button(window.EDITOR, text=lang.test_lang)
+window.add_button(window.EDITOR, 0)
 
 if __name__ == "__main__":
     window.mainloop()
