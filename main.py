@@ -5,5 +5,5 @@ window.create_label(text="Test")
 window.create_label(text="Test2")
 window.add_all_label()
 
-if __name__ == "__main__"
+if __name__ == "__main__":
     window.mainloop()
