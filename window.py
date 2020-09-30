@@ -2,6 +2,9 @@ import tkinter as tk
 from tkinter import font
 import config
 import importlib
+from tkinter.filedialog import askopenfile
+from fileNamePopup import FileNamePopup
+import time
 
 lang = importlib.import_module("lang." + config.lang)
 
@@ -19,6 +22,7 @@ class Window:
     labels = []
     buttons = []
     editor_area = None
+    file_text = None
 
     def donothing(self):
         pass
@@ -35,6 +39,7 @@ class Window:
     def __init__(self, title="Title", width="300", height="300"):
         self.root = tk.Tk()
 
+        self.file_text = tk.StringVar()
         self.root.geometry(str(width) + "x" + str(height))
         self.root.title(title)
 
@@ -42,23 +47,23 @@ class Window:
 
         menu_bar = tk.Menu(self.root)
         file_menu = tk.Menu(menu_bar, tearoff=0)
-        file_menu.add_command(label=lang.new, command=self.donothing)
-        file_menu.add_command(label=lang.open, command=self.donothing)
-        file_menu.add_command(label=lang.save, command=self.donothing)
+        file_menu.add_command(label=lang.new, command=lambda: self.create_new_file())
+        file_menu.add_command(label=lang.open, command=lambda: self.open_file())
+        file_menu.add_command(label=lang.save, command=lambda: self.donothing)
         file_menu.add_separator()
-        file_menu.add_command(label=lang.exit, command=self.root.quit)
+        file_menu.add_command(label=lang.exit, command=lambda: self.root.quit)
         menu_bar.add_cascade(label=lang.file_menu, menu=file_menu)
 
-        menu_bar.add_command(label=lang.run, command=self.donothing)
+        menu_bar.add_command(label=lang.run, command=lambda: self.donothing)
 
         apparence_menu = tk.Menu(menu_bar, tearoff=0)
-        apparence_menu.add_command(label=lang.dark_theme, command=self.change_theme)
-        apparence_menu.add_command(label=lang.light_theme, command=self.change_theme)
+        apparence_menu.add_command(label=lang.dark_theme, command=lambda: self.change_theme)
+        apparence_menu.add_command(label=lang.light_theme, command=lambda: self.change_theme)
         menu_bar.add_cascade(label=lang.apparence_menu, menu=apparence_menu)
 
         help_menu = tk.Menu(menu_bar, tearoff=0)
-        help_menu.add_command(label="Help Index", command=self.donothing)
-        help_menu.add_command(label=lang.about, command=self.donothing)
+        help_menu.add_command(label="Help Index", command=lambda: self.donothing)
+        help_menu.add_command(label=lang.about, command=lambda: self.donothing)
         menu_bar.add_cascade(label=lang.help_menu, menu=help_menu)
 
         self.root.config(menu=menu_bar)
@@ -85,6 +90,27 @@ class Window:
 
         print((self.root.winfo_reqwidth()))
 
+    def open_file(self):
+        text = askopenfile(parent=self.root).read()
+        self.editor_area.insert(tk.END, text)
+
+    def create_new_file(self):
+        popup = FileNamePopup()
+        popup.mainloop()
+        i = 0
+        while popup.get_name() is "":
+            i += 1
+            time.sleep(2)
+            if i > 10:
+                return
+                popup.root.quit()
+
+        print(popup.get_name())
+
+        f = open(popup.get_name(), "w")
+        self.editor_area.insert(tk.END, f.read())
+        f.close()
+
     def mainloop(self):
         self.root.mainloop()
 
@@ -107,7 +133,3 @@ class Window:
     def add_all_buttons(self, **kwargs):
         for button in self.buttons:
             button.pack(kwargs)
-
-# class Frame(tk.Frame):
-
-# def __init__(self):

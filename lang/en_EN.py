@@ -1,3 +1,7 @@
+# Global
+send = "Send"
+valid = "Valid"
+
 # Menu
 file_menu = "File"
 new = "New"
@@ -13,3 +17,7 @@ light_theme = "Light theme"
 
 help_menu = "Help"
 about = "About ..."
+
+# Popup file name
+
+file_name_popup = "File name"
