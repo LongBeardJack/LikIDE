@@ -1,3 +1,15 @@
-test_lang = "voila du français"
-test_lang2 = "voila le 2nd test"
-button_text = "Voila un click sur le bouton"
+# Menu
+file_menu = "Fichier"
+new = "Nouveau"
+open = "Ouvrir"
+save = "Sauvgarder"
+exit = "Quitter"
+
+run = "Éxécuter"
+
+apparence_menu = "Apparence"
+dark_theme = "Thème sombre"
+light_theme = "Thème clair"
+
+help_menu = "Aide"
+about = "A propos ..."

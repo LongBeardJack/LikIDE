@@ -1,12 +1,18 @@
 import tkinter as tk
 from tkinter import font
 import config
+import importlib
+
+lang = importlib.import_module("lang." + config.lang)
 
 
 class Window:
     EDITOR = 0
     EXPLORER = 1
     CONSOLE = 2
+
+    bg_color = config.dark_background_color
+    fg_color = config.dark_foreground_color
 
     root = None
     panes = []
@@ -17,7 +23,16 @@ class Window:
     def donothing(self):
         pass
 
-    def __init__(self, title="Title", width="300", height="300", bg_color=config.dark_background_color, fg_color=config.dark_foreground_color):
+    def change_theme(self):
+        print(self.bg_color)
+        if self.bg_color == config.light_background_color:
+            self.bg_color = config.dark_background_color
+            self.fg_color = config.dark_foreground_color
+        else:
+            self.bg_color = config.light_background_color
+            self.fg_color = config.light_foreground_color
+
+    def __init__(self, title="Title", width="300", height="300"):
         self.root = tk.Tk()
 
         self.root.geometry(str(width) + "x" + str(height))
@@ -27,28 +42,35 @@ class Window:
 
         menu_bar = tk.Menu(self.root)
         file_menu = tk.Menu(menu_bar, tearoff=0)
-        file_menu.add_command(label="New", command=self.donothing)
-        file_menu.add_command(label="Open", command=self.donothing)
-        file_menu.add_command(label="Save", command=self.donothing)
+        file_menu.add_command(label=lang.new, command=self.donothing)
+        file_menu.add_command(label=lang.open, command=self.donothing)
+        file_menu.add_command(label=lang.save, command=self.donothing)
         file_menu.add_separator()
-        file_menu.add_command(label="Exit", command=self.root.quit)
-        menu_bar.add_cascade(label="File", menu=file_menu)
+        file_menu.add_command(label=lang.exit, command=self.root.quit)
+        menu_bar.add_cascade(label=lang.file_menu, menu=file_menu)
+
+        menu_bar.add_command(label=lang.run, command=self.donothing)
+
+        apparence_menu = tk.Menu(menu_bar, tearoff=0)
+        apparence_menu.add_command(label=lang.dark_theme, command=self.change_theme)
+        apparence_menu.add_command(label=lang.light_theme, command=self.change_theme)
+        menu_bar.add_cascade(label=lang.apparence_menu, menu=apparence_menu)
 
         help_menu = tk.Menu(menu_bar, tearoff=0)
         help_menu.add_command(label="Help Index", command=self.donothing)
-        help_menu.add_command(label="About...", command=self.donothing)
-        menu_bar.add_cascade(label="Help", menu=help_menu)
+        help_menu.add_command(label=lang.about, command=self.donothing)
+        menu_bar.add_cascade(label=lang.help_menu, menu=help_menu)
 
         self.root.config(menu=menu_bar)
 
-        general_pane = tk.PanedWindow(bg=bg_color)
+        general_pane = tk.PanedWindow(bg=self.bg_color)
         general_pane.pack(fill=tk.BOTH, expand=1)
 
         editor_pane = tk.PanedWindow(bd=1, orient=tk.HORIZONTAL, width=((self.root.winfo_reqwidth() * 3) * 2))
         editor_pane.option_add('*Font', config.font_family, config.font_size)
         general_pane.add(editor_pane)
         self.panes.append(editor_pane)
-        self.editor_area = tk.Text(editor_pane, bg=bg_color, fg=fg_color)
+        self.editor_area = tk.Text(editor_pane, bg=self.bg_color, fg=self.fg_color)
         editor_pane.add(self.editor_area)
 
         explorer_pane = tk.PanedWindow(bd=2, orient=tk.VERTICAL, width=(self.root.winfo_reqwidth() * 3))

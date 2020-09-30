@@ -4,7 +4,7 @@ name = "likide"
 version = "0.0.1"
 py_version = python_version()
 author = "BIPBIPGaminG & Tudiiii"
-lang = "fr_FR"
+lang = "en_EN"
 font_size = "16"
 font_family = "Segoe\ UI\ Light"
 
