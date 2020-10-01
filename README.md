@@ -6,6 +6,6 @@
 - [x] une fenètre
 - [ ] une division console | editeur # en cours
 - [ ] le traitement de fichier # en cours
-- [ ] le changement de theme de l'IDE # en cours
+- [x] le changement de theme de l'IDE
 - [ ] boutton de lancement # en cours
 - [x] choix de langue
