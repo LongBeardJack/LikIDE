@@ -1,6 +1,8 @@
 # Global
 send = "Envoyer"
 valid = "Valider"
+cancel = "Annuler"
+no_save = "Ne pas sauvegarder"
 
 # Menu
 file_menu = "Fichier"

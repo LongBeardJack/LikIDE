@@ -2,8 +2,10 @@ import tkinter as tk
 from tkinter import font
 import config
 import importlib
+import os
 from tkinter.filedialog import askopenfile
 from fileNamePopup import FileNamePopup
+from fileSavePopup import FileSavePopup
 import time
 
 lang = importlib.import_module("lang." + config.lang)
@@ -13,9 +15,6 @@ class Window:
     EDITOR = 0
     EXPLORER = 1
     CONSOLE = 2
-
-    bg_color = config.dark_background_color
-    fg_color = config.dark_foreground_color
 
     root = None
     panes = []
@@ -28,13 +27,13 @@ class Window:
         pass
 
     def change_theme(self):
-        print(self.bg_color)
-        if self.bg_color == config.light_background_color:
-            self.bg_color = config.dark_background_color
-            self.fg_color = config.dark_foreground_color
+        if config.background_color is "#4f4f4f":
+            config.background_color = "#c5c5c5"
+            config.foreground_color = "#2d2d2d"
         else:
-            self.bg_color = config.light_background_color
-            self.fg_color = config.light_foreground_color
+            config.background_color = "#4f4f4f"
+            config.foreground_color = "#eaeaea"
+        self.update(config.background_color, config.foreground_color)
 
     def __init__(self, title="Title", width="300", height="300"):
         self.root = tk.Tk()
@@ -43,22 +42,20 @@ class Window:
         self.root.geometry(str(width) + "x" + str(height))
         self.root.title(title)
 
-        print(font.families())
-
         menu_bar = tk.Menu(self.root)
         file_menu = tk.Menu(menu_bar, tearoff=0)
         file_menu.add_command(label=lang.new, command=lambda: self.create_new_file())
         file_menu.add_command(label=lang.open, command=lambda: self.open_file())
         file_menu.add_command(label=lang.save, command=lambda: self.donothing)
         file_menu.add_separator()
-        file_menu.add_command(label=lang.exit, command=lambda: self.root.quit)
+        file_menu.add_command(label=lang.exit, command=lambda: self.root.destroy())
         menu_bar.add_cascade(label=lang.file_menu, menu=file_menu)
 
         menu_bar.add_command(label=lang.run, command=lambda: self.donothing)
 
         apparence_menu = tk.Menu(menu_bar, tearoff=0)
-        apparence_menu.add_command(label=lang.dark_theme, command=lambda: self.change_theme)
-        apparence_menu.add_command(label=lang.light_theme, command=lambda: self.change_theme)
+        apparence_menu.add_command(label=lang.dark_theme, command=lambda: self.change_theme())
+        apparence_menu.add_command(label=lang.light_theme, command=lambda: self.change_theme())
         menu_bar.add_cascade(label=lang.apparence_menu, menu=apparence_menu)
 
         help_menu = tk.Menu(menu_bar, tearoff=0)
@@ -68,14 +65,14 @@ class Window:
 
         self.root.config(menu=menu_bar)
 
-        general_pane = tk.PanedWindow(bg=self.bg_color)
+        general_pane = tk.PanedWindow(bg=config.background_color)
+        general_pane.option_add('*Font', config.font_family, config.font_size)
         general_pane.pack(fill=tk.BOTH, expand=1)
 
         editor_pane = tk.PanedWindow(bd=1, orient=tk.HORIZONTAL, width=((self.root.winfo_reqwidth() * 3) * 2))
-        editor_pane.option_add('*Font', config.font_family, config.font_size)
         general_pane.add(editor_pane)
         self.panes.append(editor_pane)
-        self.editor_area = tk.Text(editor_pane, bg=self.bg_color, fg=self.fg_color)
+        self.editor_area = tk.Text(editor_pane, bg=config.background_color, fg=config.foreground_color)
         editor_pane.add(self.editor_area)
 
         explorer_pane = tk.PanedWindow(bd=2, orient=tk.VERTICAL, width=(self.root.winfo_reqwidth() * 3))
@@ -88,28 +85,44 @@ class Window:
         self.panes.append(console_pane)
         console_pane.add(tk.Label(console_pane, text="console pane"))
 
-        print((self.root.winfo_reqwidth()))
-
     def open_file(self):
         text = askopenfile(parent=self.root).read()
+        self.editor_area.delete("1.0", tk.END)
         self.editor_area.insert(tk.END, text)
 
     def create_new_file(self):
+        if os.path.isdir(config.current_project_dir) is False:
+            os.makedirs(config.current_project_dir)
+
         popup = FileNamePopup()
         popup.mainloop()
-        i = 0
-        while popup.get_name() is "":
-            i += 1
-            time.sleep(2)
-            if i > 10:
+
+        if self.editor_area is not None and self.editor_area.get("1.0", tk.END) is not None:
+            save = self.save_popup()
+
+            if save == 0:
+                f = open(config.current_project_dir + config.current_file_name, "w")
+                f.write(self.editor_area.get("1.0", tk.END))
+                f.close()
+            elif save == 2:
                 return
-                popup.root.quit()
+            else:
+                pass
 
-        print(popup.get_name())
-
-        f = open(popup.get_name(), "w")
+        f = open(config.current_project_dir + popup.get_name(), "w+")
+        config.current_file_name = popup.get_name()
+        self.editor_area.delete("1.0", tk.END)
         self.editor_area.insert(tk.END, f.read())
         f.close()
+
+    def save_popup(self):
+        popup = FileSavePopup()
+        popup.mainloop()
+
+        return popup.get_choice()
+
+    def update(self, bg, fg):
+        self.editor_area.config(bg=bg, fg=fg)
 
     def mainloop(self):
         self.root.mainloop()

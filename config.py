@@ -1,14 +1,15 @@
 from platform import python_version
+import os
 
 name = "likide"
-version = "0.0.1"
+version = "0.0.2"
 py_version = python_version()
 author = "BIPBIPGaminG & Tudiiii"
 lang = "en_EN"
 font_size = "16"
 font_family = "Segoe\ UI\ Light"
+current_project_dir = str(os.path.expanduser('~')) + '\\Documents\\Likide\\FirstProject\\'
+current_file_name = ""
 
-dark_background_color = "#4f4f4f"
-dark_foreground_color = "#eaeaea"
-light_background_color = "#c5c5c5"
-light_foreground_color = "#2d2d2d"
+background_color = "#4f4f4f"
+foreground_color = "#eaeaea"
