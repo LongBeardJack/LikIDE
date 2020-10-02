@@ -23,3 +23,8 @@ about = "About ..."
 # Popup file name
 
 file_name_popup = "File name"
+
+# Popup file save
+
+file_save_popup = "File save"
+file_save_dialog = "Do you want to save the file ?"

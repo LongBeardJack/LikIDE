@@ -1,5 +1,7 @@
 from window import Window
-import config, importlib, traceback
+import importlib
+from config import config
+
 lang = importlib.import_module("lang." + config.lang)
 
 window = Window("Likide " + config.version + " (python: " + config.py_version + ")", "1080", "720")

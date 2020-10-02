@@ -1,5 +1,5 @@
 import tkinter as tk
-import config
+from config import config
 import importlib
 lang = importlib.import_module("lang." + config.lang)
 
@@ -13,7 +13,8 @@ class FileNamePopup:
     def on_valid(self):
         if self.entry.get() is not "":
             self.name = self.entry.get()
-            self.root.destroy()
+            self.root.quit()
+            self.quit()
 
     def __init__(self):
         self.root = tk.Tk()
@@ -31,4 +32,4 @@ class FileNamePopup:
         self.root.mainloop()
 
     def quit(self):
-        self.root.quit()
+        self.root.destroy()
