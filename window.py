@@ -48,7 +48,7 @@ class Window:
         file_menu.add_command(label=lang.open, command=lambda: self.open_file())
         file_menu.add_command(label=lang.save, command=lambda: self.donothing)
         file_menu.add_separator()
-        file_menu.add_command(label=lang.exit, command=lambda: self.root.destroy())
+        file_menu.add_command(label=lang.exit, command=lambda: self.destroy())
         menu_bar.add_cascade(label=lang.file_menu, menu=file_menu)
 
         menu_bar.add_command(label=lang.run, command=lambda: self.donothing)
@@ -94,11 +94,13 @@ class Window:
         if os.path.isdir(config.current_project_dir) is False:
             os.makedirs(config.current_project_dir)
 
-        popup = FileNamePopup()
-        popup.mainloop()
+        if self.editor_area is not tk.NONE and self.editor_area.get("1.0", tk.END) is not "":
+            popup_save = FileSavePopup()
+            popup_save.root.mainloop()
 
-        if self.editor_area is not None and self.editor_area.get("1.0", tk.END) is not None:
-            save = self.save_popup()
+            save = popup_save.get_choice()
+
+            print(save)
 
             if save == 0:
                 f = open(config.current_project_dir + config.current_file_name, "w")
@@ -109,17 +111,18 @@ class Window:
             else:
                 pass
 
+        popup = FileNamePopup()
+        popup.mainloop()
+
         f = open(config.current_project_dir + popup.get_name(), "w+")
         config.current_file_name = popup.get_name()
         self.editor_area.delete("1.0", tk.END)
         self.editor_area.insert(tk.END, f.read())
         f.close()
 
-    def save_popup(self):
-        popup = FileSavePopup()
-        popup.mainloop()
-
-        return popup.get_choice()
+    def destroy(self):
+        self.editor_area.destroy()
+        self.root.destroy()
 
     def update(self, bg, fg):
         self.editor_area.config(bg=bg, fg=fg)

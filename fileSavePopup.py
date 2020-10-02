@@ -12,7 +12,6 @@ class FileSavePopup:
     def on_click(self, index):
         self.choice = index
         self.root.destroy()
-        print("KO")
 
     def __init__(self):
         self.root = tk.Tk()
@@ -25,9 +24,3 @@ class FileSavePopup:
 
     def get_choice(self):
         return self.choice
-
-    def mainloop(self):
-        self.root.mainloop()
-
-    def quit(self):
-        self.root.quit()
