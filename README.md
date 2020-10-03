@@ -5,6 +5,7 @@
 #### LikIDE est composé de:
 - [x] une fenètre
 - [ ] une division console | editeur # en cours
+- [ ] changement de couleur par mot
 - [x] le traitement de fichier
 - [x] le changement de theme de l'IDE
 - [ ] boutton de lancement # en cours

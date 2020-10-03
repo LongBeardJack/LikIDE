@@ -1,6 +1,7 @@
 import tkinter as tk
 from config import config
 from config import keybindings
+from config import color
 import importlib
 import os
 from tkinter.filedialog import askopenfile
@@ -26,7 +27,6 @@ class Window:
         pass
 
     def key(self, event):
-        print(event.char)
         if event.char is keybindings.save:  # if event.char is {ctrl + s}
             self.save()
         elif event.char is keybindings.open:  # if event.char is {ctrl + o}
@@ -34,13 +34,14 @@ class Window:
         elif event.char is keybindings.new:  # if event.char is {ctrl + n}
             self.create_new_file()
 
-    def change_theme(self):
-        if config.background_color is "#4f4f4f":
+    def change_theme(self, index):
+        if index is 0:
             config.background_color = "#c5c5c5"
             config.foreground_color = "#2d2d2d"
-        else:
+        elif index is 1:
             config.background_color = "#4f4f4f"
             config.foreground_color = "#eaeaea"
+        print(config.foreground_color)
         self.update(config.background_color, config.foreground_color)
 
     def __init__(self, title="Title", width="300", height="300"):
@@ -63,8 +64,8 @@ class Window:
         menu_bar.add_command(label=lang.run, command=lambda: self.donothing)
 
         apparence_menu = tk.Menu(menu_bar, tearoff=0)
-        apparence_menu.add_command(label=lang.dark_theme, command=lambda: self.change_theme())
-        apparence_menu.add_command(label=lang.light_theme, command=lambda: self.change_theme())
+        apparence_menu.add_command(label=lang.dark_theme, command=lambda: self.change_theme(1))
+        apparence_menu.add_command(label=lang.light_theme, command=lambda: self.change_theme(0))
         menu_bar.add_cascade(label=lang.apparence_menu, menu=apparence_menu)
 
         help_menu = tk.Menu(menu_bar, tearoff=0)
@@ -141,6 +142,7 @@ class Window:
         f.close()
 
     def update(self, bg, fg):
+        self.colorize()
         self.editor_area.config(bg=bg, fg=fg)
 
     def mainloop(self):
@@ -149,7 +151,7 @@ class Window:
     def create_label(self, pane_index, **kwargs):
         self.labels.append(tk.Label(self.panes[pane_index], kwargs))
 
-    def add_label(self, pane_index, index, **kwargs):
+    def add_label(self, pane_index, index):
         self.panes[pane_index].add(self.labels[index])
 
     def add_all_labels(self, **kwargs):
@@ -165,3 +167,48 @@ class Window:
     def add_all_buttons(self, **kwargs):
         for button in self.buttons:
             button.pack(kwargs)
+
+    def color_text_space(self, edit, tag, word, fg_color=config.foreground_color):
+        # add a space to the end of the word
+        word = word + " "
+        edit.insert('end', word)
+        end_index = edit.index('end')
+        begin_index = "%s-%sc" % (end_index, len(word) + 1)
+        edit.tag_add(tag, begin_index, end_index)
+        edit.tag_config(tag, foreground=fg_color, background=config.background_color)
+
+    def color_text(self, edit, tag, word, fg_color=config.foreground_color):
+
+        edit.insert('end', word)
+        end_index = edit.index('end')
+        begin_index = "%s-%sc" % (end_index, len(word) + 1)
+        edit.tag_add(tag, begin_index, end_index)
+        edit.tag_config(tag, foreground=fg_color, background=config.background_color)
+
+    def colorize(self):
+        words_list = str(self.editor_area.get("1.0", tk.END))
+        word_list = words_list.split(" ")
+
+        word_list2 = []
+
+        for word in word_list:
+            if "." in word:
+                word_split = word.split(".")
+                for word_splitted in word_split:
+                    word_list2.append(word_splitted + ".")
+            else:
+                word_list2.append(word)
+
+        self.editor_area.delete("1.0", tk.END)
+
+        tags = ["tg" + str(k) for k in range(len(word_list2))]
+        for ix, word in enumerate(word_list2):
+            # word[:len(myword)] for word ending with a punctuation mark
+            if word[:len("if")] == "if" or word[:len("is")] == "is" or word[:len("not")] == "not" or word[:len("None")] == "None" or word[:len("pass")] == "pass" or word[:len("def")] == "def" or word[:len("return")] == "return" or word[:len("class")] == "class" or word[:len("import")] == "import" or word[:len("from")] == "from" or word[:len("as")] == "as":
+                self.color_text_space(self.editor_area, tags[ix], word, color.statement)
+            elif "(" in word and ")" in word:
+                self.color_text_space(self.editor_area, tags[ix], word, color.function)
+            elif "." in word:
+                self.color_text(self.editor_area, tags[ix], word, color.var)
+            else:
+                self.color_text_space(self.editor_area, tags[ix], word)
